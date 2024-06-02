@@ -2,7 +2,7 @@ import sys
 from typing import Dict
 
 
-allowed_commands = [ "exit" ]
+allowed_commands = [ "exit", "echo" ]
 
 
 def match_command(command, params) -> Dict:
@@ -11,6 +11,10 @@ def match_command(command, params) -> Dict:
         case 'exit':
             if len(params) > 0:
                 return_object = {'exit': int(params[0])}
+        case 'echo':
+            content = " ".join(params)
+            sys.stdout.write(f"{content}\n")
+            sys.stdout.flush()
     return return_object
 
 
