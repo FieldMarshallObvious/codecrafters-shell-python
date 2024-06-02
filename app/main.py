@@ -13,7 +13,7 @@ def main():
 
         if user_input not in allowed_commands:
             sys.stdout.write(f"{user_input}: command not found\n")
-            syst.stdout.fluch()
+            sys.stdout.flush()
 
 
 if __name__ == "__main__":
