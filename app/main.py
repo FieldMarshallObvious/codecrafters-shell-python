@@ -1,9 +1,8 @@
-from os.path import isdir
-import sys
 import os
-from typing import Dict, List
+from os.path import expanduser
 import subprocess
-
+import sys
+from typing import Dict, List
 
 builtin_commands = [ "exit", "echo", "type", "pwd", "cd"]
 
@@ -35,11 +34,12 @@ def builtins(command: str, params: List[str], binaries: Dict[str, str]) -> Dict:
             sys.stdout.write(os.getcwd()+"\n")
             sys.stdout.flush()
         case 'cd':
-            if not os.path.isdir(params[0]):
+            path = params[0].replace("~", expanduser("~"))
+            if not os.path.isdir(path):
                 sys.stdout.write(f"cd: {params[0]}: No such file or directory\n")
                 sys.stdout.flush()
                 return return_object
-            os.chdir(params[0])
+            os.chdir(path)
                 
     return return_object
 
