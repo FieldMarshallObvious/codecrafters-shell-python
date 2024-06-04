@@ -1,12 +1,13 @@
 import sys
 import os
-from typing import Dict, List, Set
+from typing import Dict, List
+import subprocess
 
 
-allowed_commands = [ "exit", "echo", "type"]
+builtin_commands = [ "exit", "echo", "type"]
 
 
-def match_command(command: str, params: List[str], binaries: Dict[str, str]) -> Dict:
+def builtins(command: str, params: List[str], binaries: Dict[str, str]) -> Dict:
     return_object = {}
     match command:
         case 'exit':
@@ -18,7 +19,7 @@ def match_command(command: str, params: List[str], binaries: Dict[str, str]) -> 
             sys.stdout.flush()
         case 'type':
             content = " ".join(params)
-            if content in allowed_commands:
+            if content in builtin_commands:
                 sys.stdout.write(f"{content} is a shell builtin\n")
                 sys.stdout.flush()
                 return return_object
@@ -31,6 +32,11 @@ def match_command(command: str, params: List[str], binaries: Dict[str, str]) -> 
             sys.stdout.flush()
                 
     return return_object
+
+def runBinary(command: str, params: List[str]):
+    binary_result = subprocess.run([command] + params, capture_output=True, text=True).stdout.strip("\n")
+    sys.stdout.write(binary_result + "\n")
+    sys.stdout.flush()
 
 def getBinaries(path: str) -> Dict:
     binaries = {}
@@ -56,13 +62,20 @@ def main():
         user_input = raw.split(" ")
         command = user_input[0]
         params = user_input[1:]
-        if command not in allowed_commands:
-            sys.stdout.write(f"{command}: command not found\n")
-            sys.stdout.flush()
-            continue
-        
+        if command not in builtin_commands and command not in binaries:
+            # Recheck binaries 
+            for path in path_envs:
+                binaries.update(getBinaries(path))
+            if command not in binaries:
+                sys.stdout.write(f"{command}: command not found\n")
+                sys.stdout.flush()
+                continue
+        command_return = {} 
 
-        command_return = match_command(command, params, binaries)
+        if command in builtin_commands:
+            command_return = builtins(command, params, binaries)
+        else:
+            runBinary(command, params)
 
         if 'exit' in command_return:
             sys.exit(command_return['exit'])
