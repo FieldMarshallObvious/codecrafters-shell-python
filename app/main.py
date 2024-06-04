@@ -4,7 +4,7 @@ from typing import Dict, List
 import subprocess
 
 
-builtin_commands = [ "exit", "echo", "type"]
+builtin_commands = [ "exit", "echo", "type", "pwd" ]
 
 
 def builtins(command: str, params: List[str], binaries: Dict[str, str]) -> Dict:
@@ -29,6 +29,9 @@ def builtins(command: str, params: List[str], binaries: Dict[str, str]) -> Dict:
                 return return_object
 
             sys.stdout.write(f"{content} not found\n")
+            sys.stdout.flush()
+        case 'pwd':
+            sys.stdout.write(os.getcwd()+"\n")
             sys.stdout.flush()
                 
     return return_object
