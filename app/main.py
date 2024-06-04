@@ -2,7 +2,8 @@ import sys
 from typing import Dict
 
 
-allowed_commands = [ "exit", "echo" ]
+allowed_commands = [ "exit", "echo", "type"]
+binaries = []
 
 
 def match_command(command, params) -> Dict:
@@ -15,9 +16,16 @@ def match_command(command, params) -> Dict:
             content = " ".join(params)
             sys.stdout.write(f"{content}\n")
             sys.stdout.flush()
+        case 'type':
+            content = " ".join(params)
+            if content in allowed_commands:
+                sys.stdout.write(f"{content} is a shell builtin\n")
+                sys.stdout.flush()
+                return return_object
+            sys.stdout.write(f"{content} not found\n")
+            sys.stdout.flush()
+                
     return return_object
-
-
 
 def main():
     while True:
